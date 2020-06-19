@@ -1,0 +1,28 @@
+service: bms-member-service
+
+provider:
+  name: aws
+  runtime: go1.x
+  stage: dev
+  region: ap-southeast-1
+  environment:
+    db_host: ${ssm:/bms_member_service_db_host}
+    db_username: ${ssm:/bms_member_service_db_username}
+    db_password: ${ssm:/bms_member_service_db_password}
+
+package:
+  exclude:
+    - ./**
+  include:
+    - ./bin/**
+
+functions:
+  createmember:
+    handler: bin/createmember
+    layers:
+      - arn:aws:lambda:ap-southeast-1:257702728199:layer:seabolt:1
+    events:
+      - http:
+          path: member
+          method: post
+          cors: true
