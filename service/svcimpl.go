@@ -17,7 +17,6 @@ func NewService(repository repository.Repository) Service {
 }
 
 func (s *service) CreateMember(m repository.Member) (string, error) {
-
 	//Create contact via injected repository
 	fmt.Println(m.LastName)
 	id, err := s.repository.CreateMember(m)
