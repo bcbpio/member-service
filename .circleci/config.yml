@@ -7,4 +7,5 @@ jobs:
       - checkout
       - run:
           command: |
+            go get -u ./...
             go test ./... -coverprofile=coverage.out
