@@ -43,7 +43,7 @@ func TestCreateMember(t *testing.T) {
 	if err != nil && err.Error() != "Incomplete Payload" {
 		t.Error("Wrong error message")
 	}
-	if result != "" {
+	if result == "" {
 		t.Error("Wrong service result")
 	}
 }
