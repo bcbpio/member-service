@@ -26,10 +26,5 @@ script:
   - go test ./... -coverprofile=coverage.out
   - sonar-scanner
   - make
-
-deploy:
-  provider: script
-  script: sls deploy --stage $ENV
-  on:
-    branch: development
+  - sls deploy --stage $ENV
 
