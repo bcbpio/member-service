@@ -7,10 +7,6 @@ branches:
   only:
     - development
 
-env:
-  global:
-    - GO111MODULE=on
-
 addons:
   sonarcloud:
     organization: "bcbpio"
@@ -22,6 +18,7 @@ cache:
     - $GOPATH/pkg/mod
 
 install:
+  - env GO111MODULE=on
   - go mod download
 
 script:
