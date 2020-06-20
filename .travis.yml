@@ -19,7 +19,7 @@ cache:
 
 install:
   - env GO111MODULE=on
-  - go mod download
+  - go get ./...
 
 script:
   - go test ./... -coverprofile=coverage.out
