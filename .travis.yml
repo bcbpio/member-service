@@ -5,4 +5,5 @@ go:
 
 script:
   - env GO111MODULE=on
+  - go get -u ./...
   - go test ./... -coverprofile=coverage.out
