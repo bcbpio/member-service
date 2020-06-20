@@ -26,16 +26,10 @@ install:
 #  - make
 #  - sonar-scanner
 
-stages:
-  - test
-  - code_analysis
-  - build
-
 jobs:
   include:
-    - stage: test
+    - stage: "Test and Code Analysis"
+      name: "Unit Tests"
       script: go test ./... -coverprofile=coverage.out
-    - stage: code_analysis
-      script: sonar-scanner
-    - stage: build
-      script: make
+    - script: sonar-scanner
+      name: "Code Analysis"
