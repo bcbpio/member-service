@@ -20,16 +20,14 @@ cache:
 install:
   - env GO111MODULE=on
   - go get ./...
+  - npm install -g serverless
 
-#script:
-#  - go test ./... -coverprofile=coverage.out
-#  - make
-#  - sonar-scanner
+script:
+  - go test ./... -coverprofile=coverage.out
+  - sonar-scanner
+  - make
 
-jobs:
-  include:
-    - stage: "Test and Code Analysis"
-      name: "Unit Tests"
-      script: go test ./... -coverprofile=coverage.out
-    - script: sonar-scanner
-      name: "Code Analysis"
+deploy:
+  provider: script
+  script: sls deploy --stage $ENV
+
