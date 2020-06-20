@@ -21,7 +21,21 @@ install:
   - env GO111MODULE=on
   - go get ./...
 
-script:
-  - go test ./... -coverprofile=coverage.out
-  - make
-  - sonar-scanner
+#script:
+#  - go test ./... -coverprofile=coverage.out
+#  - make
+#  - sonar-scanner
+
+stages:
+  - test
+  - code_analysis
+  - build
+
+jobs:
+  include:
+    - stage: test
+      script: go test ./... -coverprofile=coverage.out
+    - stage: code_analysis
+      script: sonar-scanner
+    - stage: build
+      script: make
