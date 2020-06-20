@@ -19,7 +19,7 @@ addons:
 
 cache:
   directories:
-    - $GOPATH/pkg/od
+    - $GOPATH/pkg/mod
 
 install:
   - go get -u ./...
