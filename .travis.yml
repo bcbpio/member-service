@@ -22,7 +22,7 @@ cache:
     - $GOPATH/pkg/mod
 
 install:
-  - go get -u ./...
+  - go mod download
 
 script:
   - go test ./... -coverprofile=coverage.out
