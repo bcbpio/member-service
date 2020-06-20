@@ -3,7 +3,15 @@ language: go
 go:
   - "1.14"
 
+addons:
+  sonarcloud:
+    organization: "bcbpio"
+    token:
+      secure: "Cd8a/Kavdl6OYqgJSOIP9fmCeUS6t2XCkkzLbjMYZIxCfcVe28hc3SSyzAF1/481JCPDwRtgwGDe5YRRkxzFIFh+g8MXu0ojurB093Xs1+nLJoSmpHvCH7WG2wAmchFeGenBS4OT5JCXJcAU2SfFieP1mRh7DrcGFZg9LSLRp30UGW+PtR2ysrNnlUTlufCJzjM6KqnFz3Yo3lWSubYDPf3Qq+TTN8t2i4Z8xTwYuKHrSSC1xYWVgmHjIUiJ0eODnKHQMrUhS7Nl10CVA2vQDpYPU6IZ+55phnytHEmRYvvZWDogmpW86a5qQrhlGcK2BFNHJmWwe/5j6mIm/SvHveUwed8omhEuoHnXkeqxxH/7RbmzN0rlOPzv3MEsENWrany039DcqlyNWM98fB0+FQgJKPq7XrNAJ6TxpEHNTIzDQxa+QTJIA3z3hpZU8QLTVdt17yvc87dvARdaMire2gap3KpGhgwyOzlskI2MsNRZ0R2UjZq6ohJ9W4h2OJ3rgQLUYWt5/1Fl6bXToBdx/wJHZZzGbw47ycTPLOwCsA7B6FW4nPFlkK/sVMAA/kjHHH1bzTwtEM/nARotKMqk4oQdPZg5MTYI/ZXlRb6Ph4R5RYohL5igvdBCx7UNUsBUlfVKVN6SosXQo6k0kYPz4OKdqUNgrJ7nNnGIdBYj6Gw="
+
 script:
   - env GO111MODULE=on
   - go get -u ./...
   - go test ./... -coverprofile=coverage.out
+  - make
+  - sonar-scanner
