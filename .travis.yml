@@ -30,4 +30,6 @@ script:
 deploy:
   provider: script
   script: sls deploy --stage $ENV
+  on:
+    branch: development
 
