@@ -6,24 +6,17 @@ import (
 )
 
 type repository struct {
-	db neo4j.Driver
+	db neo4j.Session
 }
 
 //NewRepository - instantiate default service repository
-func NewRepository(db interface{}) Repository {
+func NewRepository(db neo4j.Session) Repository {
 	return &repository{
-		db: db.(neo4j.Driver),
+		db: db,
 	}
 }
 
 func (r *repository) CreateMember(m Member) (string, error) {
-	sessionConfig := neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite}
-	session, err := r.db.NewSession(sessionConfig)
-	if err != nil {
-		return "", err
-	}
-	defer session.Close()
-
 	cypherStatement := `
 		CREATE (m:Member{lastName: $lastName, firstName: $firstName,
 			nickname: $nickname, homeNo: $homeNo, businessNo: $businessNo,
@@ -32,7 +25,7 @@ func (r *repository) CreateMember(m Member) (string, error) {
 		RETURN ID(m)
 	`
 
-	result, err := session.Run(cypherStatement, map[string]interface{}{
+	result, err := r.db.Run(cypherStatement, map[string]interface{}{
 		"lastName":     m.LastName,
 		"firstName":    m.FirstName,
 		"nickname":     m.NickName,

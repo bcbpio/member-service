@@ -5,30 +5,25 @@ import (
 	"fmt"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/bcbpio/member-service/handler"
 	"github.com/bcbpio/member-service/repository"
 	"github.com/bcbpio/member-service/service"
-	"github.com/neo4j/neo4j-go-driver/neo4j"
-	"os"
 )
 
 //Handler - handler for create member
 func Handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	//Get database connection
-	//DB Variables
-	dbHost := os.Getenv("db_host")
-	dbUsername := os.Getenv("db_username")
-	dbPassword := os.Getenv("db_password")
-	configForNeo4j40 := func(conf *neo4j.Config) { conf.Encrypted = false }
-	driver, err := neo4j.NewDriver(dbHost, neo4j.BasicAuth(dbUsername, dbPassword, ""), configForNeo4j40)
+	//Connect to db
+	driver, session, err := handler.Connect()
 	if err != nil {
 		return generateErrorResponse(err.Error(), 500), err
 	}
 	defer driver.Close()
+	defer session.Close()
 
 	//Get new contact service
 	var memberSvc service.Service
 	{
-		repo := repository.NewRepository(driver)
+		repo := repository.NewRepository(session)
 		memberSvc = service.NewService(repo)
 	}
 
