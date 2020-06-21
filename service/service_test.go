@@ -10,7 +10,6 @@ type mockError struct {
 }
 
 func (mockE mockError) Error() string {
-
 	return mockE.mockMessage
 }
 
