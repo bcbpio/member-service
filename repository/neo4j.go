@@ -10,9 +10,9 @@ type repository struct {
 }
 
 //NewRepository - instantiate default service repository
-func NewRepository(db neo4j.Driver) Repository {
+func NewRepository(db interface{}) Repository {
 	return &repository{
-		db: db,
+		db: db.(neo4j.Driver),
 	}
 }
 
