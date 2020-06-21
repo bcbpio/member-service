@@ -20,11 +20,27 @@ cache:
 install:
   - env GO111MODULE=on
   - go get ./...
-  - npm install -g serverless
 
-script:
-  - go test ./... -coverprofile=coverage.out
-  - sonar-scanner
-  - make
-  - sls deploy --stage $ENV
+#script:
+#  - go test ./... -coverprofile=coverage.out
+#  - sonar-scanner
+#  - make
+#  - sls deploy --stage $ENV
 
+
+jobs:
+  include:
+    - stage: "Pull Request Job"
+      script:
+        - go test ./... -coverprofile=coverage.out
+        - sonar-scanner
+        - make
+      if: type = pull_request
+    - stage: "Merge Job"
+      script:
+        - go test ./... -coverprofile=coverage.out
+        - sonar-scanner
+        - make
+        - npm install -g serverless
+        - sls deploy --stage $ENV
+      if: type = push
