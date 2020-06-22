@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/bcbpio/member-service/handler"
 	"github.com/bcbpio/member-service/repository"
 	"github.com/bcbpio/member-service/service"
 )
@@ -13,7 +12,7 @@ import (
 //Handler - handler for create member
 func Handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	//Connect to db
-	driver, session, err := handler.Connect()
+	driver, session, err := repository.Connect()
 	if err != nil {
 		return generateErrorResponse(err.Error(), 500), err
 	}

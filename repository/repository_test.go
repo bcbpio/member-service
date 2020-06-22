@@ -6,18 +6,8 @@ import (
 )
 
 //Mock Neo4j Record
-type mockRecord struct{}
-
-func (m mockRecord) Keys() []string {
-	panic("implement me")
-}
-
-func (m mockRecord) Values() []interface{} {
-	panic("implement me")
-}
-
-func (m mockRecord) Get(key string) (interface{}, bool) {
-	panic("implement me")
+type mockRecord struct {
+	MockRecord
 }
 
 func (m mockRecord) GetByIndex(index int) interface{} {
@@ -25,53 +15,21 @@ func (m mockRecord) GetByIndex(index int) interface{} {
 }
 
 //Mock Neo4j Result
-type mockResult struct{}
-
-func (m mockResult) Keys() ([]string, error) {
-	panic("implement me")
+type mockResult struct {
+	MockResult
 }
 
 func (m mockResult) Next() bool {
 	return true
 }
 
-func (m mockResult) Err() error {
-	panic("implement me")
-}
-
 func (m mockResult) Record() neo4j.Record {
 	return mockRecord{}
 }
 
-func (m mockResult) Summary() (neo4j.ResultSummary, error) {
-	panic("implement me")
-}
-
-func (m mockResult) Consume() (neo4j.ResultSummary, error) {
-	panic("implement me")
-}
-
 //Mock Neo4j Session
-type mockSession struct{}
-
-func (mock mockSession) LastBookmark() string {
-	panic("implement me")
-}
-
-func (mock mockSession) BeginTransaction(configurers ...func(*neo4j.TransactionConfig)) (neo4j.Transaction, error) {
-	panic("implement me")
-}
-
-func (mock mockSession) ReadTransaction(work neo4j.TransactionWork, configurers ...func(*neo4j.TransactionConfig)) (interface{}, error) {
-	panic("implement me")
-}
-
-func (mock mockSession) WriteTransaction(work neo4j.TransactionWork, configurers ...func(*neo4j.TransactionConfig)) (interface{}, error) {
-	panic("implement me")
-}
-
-func (mock mockSession) Close() error {
-	panic("implement me")
+type mockSession struct {
+	MockSession
 }
 
 func (mock mockSession) Run(cypher string, params map[string]interface{},
@@ -83,12 +41,38 @@ func (mock mockSession) Run(cypher string, params map[string]interface{},
 	return mockResult{}, nil
 }
 
-type mockError struct {
-	mockMessage string
-}
+func TestConnect(t *testing.T) {
 
-func (mockE mockError) Error() string {
-	return mockE.mockMessage
+	newDriver = mockNewDriver
+	driver, session, err := Connect()
+
+	if driver == nil {
+		t.Error("Should not be nil")
+	}
+
+	if session == nil {
+		t.Error("Should not be nil")
+	}
+
+	if err != nil {
+		t.Error("Should not be error")
+	}
+
+	mockDriverController = false
+	driver, _, err = Connect()
+	if driver != nil {
+		t.Error("Should be nil")
+	}
+	if err == nil {
+		t.Error("Should be error")
+	}
+
+	mockDriverController = true
+	mockSessionController = false
+	_, session, _ = Connect()
+	if session != nil {
+		t.Error("Should be nil")
+	}
 }
 
 func TestCreateMember(t *testing.T) {
