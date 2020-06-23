@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/bcbpio/member-service/repository"
 	"testing"
 )
@@ -13,36 +14,39 @@ func (mockE mockError) Error() string {
 	return mockE.mockMessage
 }
 
+//Mock Repository
 type mockRepository struct{}
 
+//Mock Create Member Function
 func (mock *mockRepository) CreateMember(m repository.Member) (string, error) {
 	if m.LastName == "" {
-		return "", mockError{"Incomplete Payload"}
+		return "", mockError{}
 	}
 	return "0", nil
 }
 
 func TestCreateMember(t *testing.T) {
+	//Test Scenarios
+	scenarios := []struct {
+		//Parameters
+		m repository.Member
+		//Result
+		result string
+		err    error
+	}{
+		{repository.Member{LastName: "MockLastName"}, "0", nil},
+		{repository.Member{}, "", mockError{}},
+	}
+
+	//Run Test Cases
 	svc := NewService(&mockRepository{})
-	//Test success
-	result, err := svc.CreateMember(repository.Member{LastName: "Lim"})
-
-	if result != "0" {
-		t.Error("Wrong service result")
-	}
-	if err != nil {
-		t.Error("Should not be error")
-	}
-
-	//Test failure
-	result, err = svc.CreateMember(repository.Member{})
-	if err == nil {
-		t.Error("Should be error")
-	}
-	if err != nil && err.Error() != "Incomplete Payload" {
-		t.Error("Wrong error message")
-	}
-	if result != "" {
-		t.Error("Wrong service result")
+	for index, scenario := range scenarios {
+		result, err := svc.CreateMember(scenario.m)
+		//Result Check
+		fmt.Print(result, err)
+		if result != scenario.result || err != scenario.err {
+			t.Errorf("Test Case %d Failed - Expected %s, %v Actual %s, %v",
+				index, scenario.result, scenario.err, result, err)
+		}
 	}
 }
