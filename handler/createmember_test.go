@@ -116,7 +116,7 @@ func TestCreateMemberHandler(t *testing.T) {
 		},
 	}
 	for index, scenario := range scenarios {
-		response, _ := Handler(scenario.request)
+		response, _ := CreateMemberHandler(scenario.request)
 		if !reflect.DeepEqual(response, scenario.response) {
 			t.Errorf("Test Case %d Result Failed - Expected '%v' | Actual '%v'",
 				index+1, scenario.response, response)

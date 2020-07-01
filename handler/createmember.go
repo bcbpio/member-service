@@ -2,7 +2,6 @@ package handler
 
 import (
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/bcbpio/member-service/repository"
 	"github.com/bcbpio/member-service/service"
 )
@@ -17,7 +16,7 @@ var NewRepository = repository.NewRepository
 var NewService = service.NewService
 
 //Handler - handler for create member
-func Handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func CreateMemberHandler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	//Connect to db
 	driver, session, err := Connect()
 	if err != nil {
@@ -59,9 +58,4 @@ func generateErrorResponse(error string, code int) events.APIGatewayProxyRespons
 			"Access-Control-Allow-Credentials": "true",
 		},
 	}
-}
-
-func main() {
-	//Register handler
-	lambda.Start(Handler)
 }
