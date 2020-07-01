@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"github.com/neo4j/neo4j-go-driver/neo4j"
 	"testing"
 )
@@ -36,7 +37,7 @@ func (mock mockSession) Run(cypher string, params map[string]interface{},
 	configurers ...func(*neo4j.TransactionConfig)) (neo4j.Result, error) {
 
 	if params["lastName"] == "" {
-		return nil, mockError{}
+		return nil, errors.New("")
 	}
 	return mockResult{}, nil
 }
@@ -53,17 +54,17 @@ func TestConnect(t *testing.T) {
 		err     error
 	}{
 		{true, true, MockDriver{}, MockSession{}, nil},
-		{false, true, nil, nil, mockError{}},
-		{true, false, nil, nil, mockError{}},
+		{false, true, nil, nil, errors.New("")},
+		{true, false, nil, nil, errors.New("")},
 	}
 	newDriver = mockNewDriver
 	for index, scenario := range scenarios {
 		mockDriverController = scenario.driverController
 		mockSessionController = scenario.sessionController
 		driver, session, err := Connect()
-		if driver != scenario.driver ||
-			session != scenario.session ||
-			err != scenario.err {
+		if driver != scenario.driver &&
+			session != scenario.session &&
+			!errors.Is(err, scenario.err) {
 			t.Errorf("Test Case %d Failed - Expected %v, %v, %v Actual %v, %v, %v",
 				index+1, scenario.driver, scenario.session, scenario.err, driver, session, err)
 		}
@@ -78,14 +79,14 @@ func TestCreateMember(t *testing.T) {
 		result string
 		err    error
 	}{
-		{Member{}, "", mockError{}},
+		{Member{}, "", errors.New("")},
 		{Member{LastName: "MOCK_LNAME"}, "0", nil},
 	}
 	repo := NewRepository(mockSession{})
 	for index, scenario := range scenarios {
 		id, err := repo.CreateMember(scenario.m)
-		if id != scenario.result ||
-			err != scenario.err {
+		if id != scenario.result &&
+			!errors.Is(err, scenario.err) {
 			t.Errorf("Test Case %d Failed - Expected %s, %v Actual %s, %v",
 				index+1, scenario.result, scenario.err, id, err)
 		}

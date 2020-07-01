@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"github.com/neo4j/neo4j-go-driver/neo4j"
 	"net/url"
 )
@@ -15,7 +16,7 @@ var mockNewDriver = func(target string, auth neo4j.AuthToken, configurers ...fun
 	if mockDriverController {
 		return MockDriver{}, nil
 	}
-	return nil, mockError{}
+	return nil, errors.New("")
 }
 
 //Mock Neo4j Driver
@@ -35,7 +36,7 @@ func (mockDriver MockDriver) NewSession(config neo4j.SessionConfig) (neo4j.Sessi
 	if mockSessionController {
 		return MockSession{}, nil
 	}
-	return nil, mockError{}
+	return nil, errors.New("")
 }
 
 func (mockDriver MockDriver) Close() error {
@@ -114,13 +115,4 @@ func (mockSession MockSession) Close() error {
 func (mockSession MockSession) Run(cypher string, params map[string]interface{},
 	configurers ...func(*neo4j.TransactionConfig)) (neo4j.Result, error) {
 	return nil, nil
-}
-
-//Mock error
-type mockError struct {
-	mockMessage string
-}
-
-func (mockE mockError) Error() string {
-	return mockE.mockMessage
 }

@@ -1,8 +1,6 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/bcbpio/member-service/repository"
@@ -26,16 +24,8 @@ func Handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 		memberSvc = service.NewService(repo)
 	}
 
-	//Unmarshal post request body
-	var m repository.Member
-	err = json.Unmarshal([]byte(req.Body), &m)
-	if err != nil {
-		fmt.Println(err)
-		return generateErrorResponse(err.Error(), 500), nil
-	}
-
 	//Create member using post request body as query parameter
-	memberID, err := memberSvc.CreateMember(m)
+	memberID, err := memberSvc.CreateMember(req.Body)
 	if err != nil {
 		return generateErrorResponse(err.Error(), 500), nil
 	}
