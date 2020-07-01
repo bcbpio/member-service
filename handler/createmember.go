@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"github.com/aws/aws-lambda-go/events"
@@ -7,10 +7,19 @@ import (
 	"github.com/bcbpio/member-service/service"
 )
 
+//DB connection function
+var Connect = repository.Connect
+
+//New Repository Initializer
+var NewRepository = repository.NewRepository
+
+//New Service Initializer
+var NewService = service.NewService
+
 //Handler - handler for create member
 func Handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	//Connect to db
-	driver, session, err := repository.Connect()
+	driver, session, err := Connect()
 	if err != nil {
 		return generateErrorResponse(err.Error(), 500), err
 	}
@@ -20,8 +29,8 @@ func Handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse,
 	//Get new contact service
 	var memberSvc service.Service
 	{
-		repo := repository.NewRepository(session)
-		memberSvc = service.NewService(repo)
+		repo := NewRepository(session)
+		memberSvc = NewService(repo)
 	}
 
 	//Create member using post request body as query parameter
@@ -52,7 +61,7 @@ func generateErrorResponse(error string, code int) events.APIGatewayProxyRespons
 	}
 }
 
-func main() {
+func Main() {
 	//Register handler
 	lambda.Start(Handler)
 }
