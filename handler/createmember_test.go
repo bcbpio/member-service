@@ -73,7 +73,11 @@ func (m mockSession) Close() error {
 }
 
 func TestCreateMemberHandler(t *testing.T) {
+	forceError := false
 	Connect = func() (neo4j.Driver, neo4j.Session, error) {
+		if forceError {
+			return nil, nil, errors.New("")
+		}
 		return mockDriver{}, mockSession{}, nil
 	}
 	NewRepository = func(db neo4j.Session) repository.Repository {
@@ -84,6 +88,8 @@ func TestCreateMemberHandler(t *testing.T) {
 	}
 
 	scenarios := []struct {
+		//Global Parameter
+		forceError bool
 		//Parameter
 		request events.APIGatewayProxyRequest
 		//Return
@@ -91,6 +97,7 @@ func TestCreateMemberHandler(t *testing.T) {
 		err      error
 	}{
 		{
+			false,
 			events.APIGatewayProxyRequest{Body: ""},
 			events.APIGatewayProxyResponse{
 				Body:       "",
@@ -103,6 +110,7 @@ func TestCreateMemberHandler(t *testing.T) {
 			nil,
 		},
 		{
+			false,
 			events.APIGatewayProxyRequest{Body: "{lastName:''}"},
 			events.APIGatewayProxyResponse{
 				Body:       "0",
@@ -114,8 +122,22 @@ func TestCreateMemberHandler(t *testing.T) {
 			},
 			nil,
 		},
+		{
+			true,
+			events.APIGatewayProxyRequest{},
+			events.APIGatewayProxyResponse{
+				Body:       "",
+				StatusCode: 500,
+				Headers: map[string]string{
+					"Access-Control-Allow-Origin":      "*",
+					"Access-Control-Allow-Credentials": "true",
+				},
+			},
+			nil,
+		},
 	}
 	for index, scenario := range scenarios {
+		forceError = scenario.forceError
 		response, _ := CreateMemberHandler(scenario.request)
 		if !reflect.DeepEqual(response, scenario.response) {
 			t.Errorf("Test Case %d Result Failed - Expected '%v' | Actual '%v'",
