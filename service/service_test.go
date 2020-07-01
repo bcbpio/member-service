@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"github.com/bcbpio/member-service/repository"
 	"testing"
 )
@@ -42,11 +41,9 @@ func TestCreateMember(t *testing.T) {
 	svc := NewService(&mockRepository{})
 	for index, scenario := range scenarios {
 		result, err := svc.CreateMember(scenario.m)
-		//Result Check
-		fmt.Print(result, err)
 		if result != scenario.result || err != scenario.err {
 			t.Errorf("Test Case %d Failed - Expected %s, %v Actual %s, %v",
-				index, scenario.result, scenario.err, result, err)
+				index+1, scenario.result, scenario.err, result, err)
 		}
 	}
 }

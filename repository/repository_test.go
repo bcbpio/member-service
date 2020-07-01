@@ -36,63 +36,58 @@ func (mock mockSession) Run(cypher string, params map[string]interface{},
 	configurers ...func(*neo4j.TransactionConfig)) (neo4j.Result, error) {
 
 	if params["lastName"] == "" {
-		return nil, mockError{"Incomplete Payload"}
+		return nil, mockError{}
 	}
 	return mockResult{}, nil
 }
 
 func TestConnect(t *testing.T) {
-
+	//Test Scenarios
+	scenarios := []struct {
+		//Global Parameters
+		driverController  bool
+		sessionController bool
+		//Result
+		driver  neo4j.Driver
+		session neo4j.Session
+		err     error
+	}{
+		{true, true, MockDriver{}, MockSession{}, nil},
+		{false, true, nil, nil, mockError{}},
+		{true, false, nil, nil, mockError{}},
+	}
 	newDriver = mockNewDriver
-	driver, session, err := Connect()
-
-	if driver == nil {
-		t.Error("Should not be nil")
-	}
-
-	if session == nil {
-		t.Error("Should not be nil")
-	}
-
-	if err != nil {
-		t.Error("Should not be error")
-	}
-
-	mockDriverController = false
-	driver, _, err = Connect()
-	if driver != nil {
-		t.Error("Should be nil")
-	}
-	if err == nil {
-		t.Error("Should be error")
-	}
-
-	mockDriverController = true
-	mockSessionController = false
-	_, session, _ = Connect()
-	if session != nil {
-		t.Error("Should be nil")
+	for index, scenario := range scenarios {
+		mockDriverController = scenario.driverController
+		mockSessionController = scenario.sessionController
+		driver, session, err := Connect()
+		if driver != scenario.driver ||
+			session != scenario.session ||
+			err != scenario.err {
+			t.Errorf("Test Case %d Failed - Expected %v, %v, %v Actual %v, %v, %v",
+				index+1, scenario.driver, scenario.session, scenario.err, driver, session, err)
+		}
 	}
 }
 
 func TestCreateMember(t *testing.T) {
-	repo := NewRepository(&mockSession{})
-	id, err := repo.CreateMember(Member{})
-
-	if id != "" {
-		t.Error("Wrong id result")
+	scenarios := []struct {
+		//Parameters
+		m Member
+		//Result
+		result string
+		err    error
+	}{
+		{Member{}, "", mockError{}},
+		{Member{LastName: "MOCK_LNAME"}, "0", nil},
 	}
-	if err == nil {
-		t.Error("Should be error")
+	repo := NewRepository(mockSession{})
+	for index, scenario := range scenarios {
+		id, err := repo.CreateMember(scenario.m)
+		if id != scenario.result ||
+			err != scenario.err {
+			t.Errorf("Test Case %d Failed - Expected %s, %v Actual %s, %v",
+				index+1, scenario.result, scenario.err, id, err)
+		}
 	}
-
-	id, err = repo.CreateMember(Member{LastName: "MOCK_LNAME"})
-
-	if id != "0" {
-		t.Error("Wrong id result")
-	}
-	if err != nil {
-		t.Error("Should not be error")
-	}
-
 }

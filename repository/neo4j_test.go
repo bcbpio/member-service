@@ -9,10 +9,13 @@ var mockDriverController = true
 
 //Mock NewDriver Method
 var mockNewDriver = func(target string, auth neo4j.AuthToken, configurers ...func(*neo4j.Config)) (neo4j.Driver, error) {
+	for _, configurer := range configurers {
+		configurer(&neo4j.Config{})
+	}
 	if mockDriverController {
 		return MockDriver{}, nil
 	}
-	return nil, mockError{"Mock New Driver Error"}
+	return nil, mockError{}
 }
 
 //Mock Neo4j Driver
@@ -32,7 +35,7 @@ func (mockDriver MockDriver) NewSession(config neo4j.SessionConfig) (neo4j.Sessi
 	if mockSessionController {
 		return MockSession{}, nil
 	}
-	return nil, mockError{"Mock New Session Error"}
+	return nil, mockError{}
 }
 
 func (mockDriver MockDriver) Close() error {

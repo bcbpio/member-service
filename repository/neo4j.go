@@ -34,7 +34,7 @@ func Connect() (neo4j.Driver, neo4j.Session, error) {
 	sessionConfig := neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite}
 	session, err := driver.NewSession(sessionConfig)
 	if err != nil {
-		return driver, nil, err
+		return nil, nil, err
 	}
 
 	return driver, session, nil
