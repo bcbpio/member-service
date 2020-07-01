@@ -61,7 +61,7 @@ func generateErrorResponse(error string, code int) events.APIGatewayProxyRespons
 	}
 }
 
-func Main() {
+func main() {
 	//Register handler
 	lambda.Start(Handler)
 }
