@@ -28,16 +28,23 @@ func TestCreateMember(t *testing.T) {
 	}{
 		{"{\"lastName\":\"MOCK\"}", "0", nil},
 		{"{\"lastName\":\"\"}", "", errors.New("")},
-		{"", "", errors.New("unexpected end of JSON input")},
+		{"", "", errors.New("")},
 	}
 
 	//Run Test Cases
 	svc := NewService(&mockRepository{})
 	for index, scenario := range scenarios {
 		result, err := svc.CreateMember(scenario.requestBody)
-		if result != scenario.result && !errors.Is(err, scenario.err) {
-			t.Errorf("Test Case %d Failed - Expected '%s', '%v' Actual '%s', '%v'",
-				index+1, scenario.result, scenario.err, result, err)
+		if result != scenario.result {
+			t.Errorf("Test Case %d Result Failed - Expected '%s' | Actual '%s'",
+				index+1, scenario.result, result)
+		}
+		if (scenario.err == nil) && !errors.Is(err, scenario.err) {
+			t.Errorf("Test Case %d Error Failed - Expected '%v' | Actual '%v'",
+				index+1, scenario.err, err)
+		} else if (scenario.err != nil) && !errors.As(err, &scenario.err) {
+			t.Errorf("Test Case %d Error Failed - Expected '%T' | Actual '%T'",
+				index+1, scenario.err, err)
 		}
 	}
 }

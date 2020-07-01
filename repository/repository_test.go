@@ -62,11 +62,17 @@ func TestConnect(t *testing.T) {
 		mockDriverController = scenario.driverController
 		mockSessionController = scenario.sessionController
 		driver, session, err := Connect()
-		if driver != scenario.driver &&
-			session != scenario.session &&
-			!errors.Is(err, scenario.err) {
-			t.Errorf("Test Case %d Failed - Expected %v, %v, %v Actual %v, %v, %v",
-				index+1, scenario.driver, scenario.session, scenario.err, driver, session, err)
+		if driver != scenario.driver ||
+			session != scenario.session {
+			t.Errorf("Test Case %d Failed - Expected '%v', '%v' Actual '%v', '%v'",
+				index+1, scenario.driver, scenario.session, driver, session)
+		}
+		if (scenario.err == nil) && !errors.Is(err, scenario.err) {
+			t.Errorf("Test Case %d Error Failed - Expected '%v' | Actual '%v'",
+				index+1, scenario.err, err)
+		} else if (scenario.err != nil) && !errors.As(err, &scenario.err) {
+			t.Errorf("Test Case %d Error Failed - Expected '%T' | Actual '%T'",
+				index+1, scenario.err, err)
 		}
 	}
 }
@@ -85,10 +91,16 @@ func TestCreateMember(t *testing.T) {
 	repo := NewRepository(mockSession{})
 	for index, scenario := range scenarios {
 		id, err := repo.CreateMember(scenario.m)
-		if id != scenario.result &&
-			!errors.Is(err, scenario.err) {
-			t.Errorf("Test Case %d Failed - Expected %s, %v Actual %s, %v",
-				index+1, scenario.result, scenario.err, id, err)
+		if id != scenario.result {
+			t.Errorf("Test Case %d Failed - Expected '%s' | Actual '%s'",
+				index+1, scenario.result, id)
+		}
+		if (scenario.err == nil) && !errors.Is(err, scenario.err) {
+			t.Errorf("Test Case %d Error Failed - Expected '%v' | Actual '%v'",
+				index+1, scenario.err, err)
+		} else if (scenario.err != nil) && !errors.As(err, &scenario.err) {
+			t.Errorf("Test Case %d Error Failed - Expected '%T' | Actual '%T'",
+				index+1, scenario.err, err)
 		}
 	}
 }
